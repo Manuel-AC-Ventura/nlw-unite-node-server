@@ -1,61 +1,14 @@
 import { fastify } from "fastify";
-import { z } from "zod"
-import { PrismaClient } from "@prisma/client"
-import { generateSlug } from "./utils/generate-slug";
+import { serializerCompiler, validatorCompiler, } from "fastify-type-provider-zod";
+import { createEvent } from "./routes/create-event";
+import { registerForEvent } from "./routes/register-for-event";
 
 const app = fastify();
+app.setValidatorCompiler(validatorCompiler);
+app.setSerializerCompiler(serializerCompiler);
 
-const prisma = new PrismaClient({
-  log: ['query'],
-})
-
-app.get('/', ()=>{
-  return 'Hi'
-})
-
-app.post('/events', async (req, res)=>{
-  const createEventSchema = z.object({
-    title: z.string().min(4),
-    details: z.string().nullable(),
-    maximumAttendees: z.number().int().positive().nullable()
-  })
-  
-  const {
-    title,
-    details,
-    maximumAttendees
-  } = createEventSchema.parse(req.body)
-
-  const slug = generateSlug(title)
-
-  const eventWithSameSlug = await prisma.event.findUnique({
-    where: {
-      slug
-    }
-    
-  })
-
-  if(eventWithSameSlug !== null){
-    return res
-      .status(409)
-      .send({ message: "Event with same title already exists" });
-  }
-
-  const event = await prisma.event.create({
-    data: {
-      title,
-      slug,
-      details,
-      maximumAttendees,
-    },
-  });
-
-  // return { eventId: event.id }
-  return res
-    .status(201)
-    .send({ eventId: event.id })
-})
-
+app.register(createEvent)
+app.register(registerForEvent)
 
 app.listen({ port: 3333 }).then(()=>{
   console.log('HTTP Server running!')
