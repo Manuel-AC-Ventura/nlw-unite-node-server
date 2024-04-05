@@ -6,10 +6,12 @@ import { ZodTypeProvider } from "fastify-type-provider-zod";
 
 
 
-export const createEvent = (app: FastifyInstance)=>{
-  app.withTypeProvider<ZodTypeProvider>().post(
-    "/event",
-    {
+
+export const createEvent = async (app: FastifyInstance)=>{
+  app
+    .withTypeProvider<ZodTypeProvider>()
+    .post('/event',
+      {
       schema: {
         body: z.object({
           title: z.string().min(4),
@@ -23,7 +25,7 @@ export const createEvent = (app: FastifyInstance)=>{
         },
       },
     },
-    async (req, res) => {
+    async (req, res)=>{
       const { title, details, maximumAttendees } = req.body;
 
       const slug = generateSlug(title);
@@ -47,6 +49,5 @@ export const createEvent = (app: FastifyInstance)=>{
         },
       });
       return res.status(201).send({ eventId: event.id });
-    }
-  );
+    })
 }
