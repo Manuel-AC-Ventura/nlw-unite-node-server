@@ -2,7 +2,6 @@
 
 POST http://localhost:3333/events
 Content-Type: application/json
-
 {
   "title": "NLW Unite",
   "details": "evento para programação",
@@ -17,15 +16,15 @@ Content-Type: application/json
 {
   "title": "New Event",
   "details": null,
-  "maximumAttendees": 1
+  "maximumAttendees": 100
 }
 
 ###
 
-POST http://localhost:3333/events/318ad6e3-cad4-4d81-b4d2-90a88fb05c65/attendees
+POST http://localhost:3333/events/87e271be-7ec5-4630-9a5f-86d5d2b7fef1/attendees
 Content-Type: application/json
 
 {
   "name": "Manuel Ventura",
-  "email": "example2@email.com"
+  "email": "example@email.com"
 }
